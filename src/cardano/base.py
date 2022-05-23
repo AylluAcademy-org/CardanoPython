@@ -414,19 +414,6 @@ class Node(Cardano):
             '--signing-key-file', self.KEYS_FILE_PATH + '/' + sign_address_name + '/' + sign_address_name
             + '.payment.skey', '--out-file', self.TRANSACTION_PATH_FILE + '/tx.signed']
         i = 0
-        # mint_array = []
-        # if policyid != '':
-        #     mint_array.append('--signing-key-file')
-        #     mint_array.append(
-        #         self.KEYS_FILE_PATH +
-        #         '/' +
-        #         wallet_id +
-        #         '/minting/' +
-        #         policyid +
-        #         '.policy.skey')
-        #     command_string, index = self.insert_command(
-        #         7 + i, 1, command_string, mint_array)
-        #     i = i + index
         if self.CARDANO_NETWORK == 'testnet':
             command_string, index = self.insert_command(
                 7 + i, 1, command_string, ['--testnet-magic',
@@ -586,14 +573,6 @@ class Node(Cardano):
                 print(command_string)
                 print(rawResult)
 
-                print('Analyzing the transaction....')
-                command_string = [
-                    self.CARDANO_CLI_PATH,
-                    'transaction', 'view',
-                    '--tx-body-file', self.TRANSACTION_PATH_FILE + '/tx.draft']
-
-                rawResult = self.execute_command(command_string, None)
-                print(rawResult)
             else:
                 rawResult = 'Not enough funds to process the transaction'
                 print(rawResult)
@@ -604,6 +583,17 @@ class Node(Cardano):
             print("Missing required arguments")
         except AssertionError:
             print("Please verify your inputs in params. Possibly mint without policyID")
+
+    def analyze_tx(self, tx_name_file):
+        print('Analyzing the transaction....')
+        command_string = [
+            self.CARDANO_CLI_PATH,
+            'transaction', 'view',
+            '--tx-body-file', self.TRANSACTION_PATH_FILE + '/' + tx_name_file]
+
+        rawResult = self.execute_command(command_string, None)
+        print(rawResult)
+        return rawResult
 
     def assemble_tx(self, witness_wallet_name_array):
         print('Executing Assemble witness')
